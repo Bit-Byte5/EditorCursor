@@ -1,0 +1,54 @@
+---
+description: Commit incrementally and push to GitHub after each successful build
+alwaysApply: true
+---
+
+# Git workflow — commit as you go, sync after build
+
+This project overrides the default "commit only when asked" behavior. **Commit and push proactively** while working here.
+
+## Commit as you go
+
+After each logical chunk of work (new action, bug fix, doc update, refactor), commit before moving on:
+
+1. `git status` and `git diff` — review what changed
+2. Stage only relevant files — never `.env`, credentials, or build artifacts
+3. Write a concise message (1–2 sentences, focus on **why**)
+4. Commit via HEREDOC:
+
+```bash
+git commit -m "$(cat <<'EOF'
+Short summary of why this change was made.
+
+EOF
+)"
+```
+
+- Prefer several small commits over one large end-of-session commit
+- Do not commit `build/` or other generated output
+- Never update git config, skip hooks, or force-push to `main`
+
+## Sync after every build
+
+After **every successful** mod build, push to the cloud repo:
+
+```bash
+GEODE_SDK=/Users/Shared/Geode/sdk geode build
+git push origin HEAD
+```
+
+Workflow:
+
+1. Make code changes → commit
+2. Run `geode build` to verify it compiles and installs
+3. If build succeeds → `git push origin HEAD` (use `-u origin HEAD` on a new branch)
+4. If build fails → fix, commit the fix, rebuild, then push
+
+Remote: `origin` → `https://github.com/Bit-Byte5/EditorCursor.git`
+
+If push is rejected (remote ahead), pull/rebase first — do not force-push `main`.
+
+## When to skip push
+
+- Build failed — fix first, then commit, rebuild, push
+- Only doc/rule edits with no build needed — still commit; push after the next successful build or immediately if no build is expected
