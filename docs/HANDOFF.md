@@ -100,6 +100,7 @@ GEODE_SDK=/Users/Shared/Geode/sdk geode build
 | `src/actions/MoveSelected.hpp` | Move / nudge selected objects |
 | `src/actions/CreateObject.hpp` | `CREATE_OBJECT` |
 | `src/actions/SelectObjects.hpp` | `GET_SELECTION`, `SELECT_OBJECTS`, `DESELECT_ALL` |
+| `src/actions/QueryLevel.hpp` | `GET_LEVEL_SUMMARY`, `QUERY_OBJECTS` |
 | `mod.json` | Mod metadata, `ws-port` setting (default 1314) |
 | `logo.png` | Mod list icon |
 
@@ -119,6 +120,8 @@ See [API.md](./API.md) for full request/response shapes.
 |--------|-------|------------------|---------|
 | `PING` | yes | no | `{ modLoaded, inEditor }` |
 | `GET_SELECTION` | no | yes | Current selection snapshot |
+| `GET_LEVEL_SUMMARY` | no | yes | Object counts, groups, bounds |
+| `QUERY_OBJECTS` | no | yes | Filter by objectId, group, rect, targetGroup |
 | `SELECT_OBJECTS` | no | yes | Select by `uniqueId` / `uniqueIds` |
 | `DESELECT_ALL` | no | yes | Clear selection |
 | `CREATE_OBJECT` | no | yes | Place object by `objectId`, `x`, `y` |
@@ -142,6 +145,12 @@ npx -y wscat -c ws://127.0.0.1:1314 -w 5 -x '{"nonce":"c","action":"CREATE_OBJEC
 
 # Read selection
 npx -y wscat -c ws://127.0.0.1:1314 -w 5 -x '{"nonce":"s","action":"GET_SELECTION"}'
+
+# Level overview
+npx -y wscat -c ws://127.0.0.1:1314 -w 5 -x '{"nonce":"sum","action":"GET_LEVEL_SUMMARY"}'
+
+# Find cube blocks in an area
+npx -y wscat -c ws://127.0.0.1:1314 -w 5 -x '{"nonce":"q","action":"QUERY_OBJECTS","objectId":1,"rect":{"minX":0,"minY":0,"maxX":600,"maxY":300}}'
 
 # Select by uniqueId, then move
 npx -y wscat -c ws://127.0.0.1:1314 -w 5 -x '{"nonce":"sel","action":"SELECT_OBJECTS","uniqueId":16}'
@@ -230,8 +239,8 @@ Priority order discussed with user:
 ### Phase 1 — Read context (partially done)
 
 - [x] `GET_SELECTION`
-- [ ] `QUERY_OBJECTS` — filter by rect, objectId, group, targetGroup
-- [ ] `GET_LEVEL_SUMMARY` — counts, group inventory
+- [x] `QUERY_OBJECTS` — filter by rect, objectId, group, targetGroup
+- [x] `GET_LEVEL_SUMMARY` — counts, group inventory
 - [ ] `DESCRIBE_OBJECT` — full field map for one `uniqueId`
 
 ### Phase 2 — Groups (needed before triggers work end-to-end)

@@ -1,7 +1,10 @@
 #pragma once
 
 #include "Response.hpp"
+#include "actions/CreateObject.hpp"
 #include "actions/MoveSelected.hpp"
+#include "actions/QueryLevel.hpp"
+#include "actions/SelectObjects.hpp"
 
 #include <Geode/Geode.hpp>
 
@@ -48,6 +51,12 @@ inline std::unordered_map<std::string, ActionDefinition> buildActionRegistry() {
         {"MOVE_SELECTED_UP", {"MOVE_SELECTED_UP", true, runMoveSelectedUp}},
         {"MOVE_SELECTED_DOWN", {"MOVE_SELECTED_DOWN", true, runMoveSelectedDown}},
         {"NUDGE_SELECTED", {"NUDGE_SELECTED", true, runNudgeSelected}},
+        {"CREATE_OBJECT", {"CREATE_OBJECT", true, runCreateObject}},
+        {"GET_SELECTION", {"GET_SELECTION", true, runGetSelection}},
+        {"GET_LEVEL_SUMMARY", {"GET_LEVEL_SUMMARY", true, runGetLevelSummary}},
+        {"QUERY_OBJECTS", {"QUERY_OBJECTS", true, runQueryObjects}},
+        {"SELECT_OBJECTS", {"SELECT_OBJECTS", true, runSelectObjects}},
+        {"DESELECT_ALL", {"DESELECT_ALL", true, runDeselectAll}},
     };
 }
 

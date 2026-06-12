@@ -135,6 +135,90 @@ Select objects by level unique IDs.
 
 ---
 
+## GET_LEVEL_SUMMARY
+
+Overview of everything in the open level. Useful for giving Cursor situational awareness before editing.
+
+**Request:**
+
+```json
+{ "nonce": "1", "action": "GET_LEVEL_SUMMARY" }
+```
+
+**Response `response`:**
+
+```json
+{
+  "totalObjectCount": 842,
+  "selectedCount": 0,
+  "triggerCount": 12,
+  "uniqueObjectIdTypes": 5,
+  "uniqueGroupCount": 3,
+  "objectIdCounts": { "1": 800, "901": 12 },
+  "groupIds": [1, 5, 12],
+  "bounds": { "minX": 30, "minY": 105, "maxX": 1920, "maxY": 300 }
+}
+```
+
+`bounds` is omitted when the level has no objects.
+
+---
+
+## QUERY_OBJECTS
+
+Find objects matching one or more filters. At least one filter is required.
+
+**Request:**
+
+```json
+{
+  "nonce": "1",
+  "action": "QUERY_OBJECTS",
+  "objectId": 1,
+  "groupId": 5,
+  "targetGroupId": 5,
+  "rect": { "minX": 0, "minY": 0, "maxX": 300, "maxY": 300 },
+  "limit": 50
+}
+```
+
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `objectId` | number | — | Match GD object type ID |
+| `groupId` | number | — | Object belongs to this group |
+| `targetGroupId` | number | — | Trigger targets this group |
+| `rect` | object | — | Axis-aligned bounds (`minX`, `minY`, `maxX`, `maxY`) |
+| `limit` | number | `50` | Max objects returned (cap `200`) |
+
+Filters combine with **AND** logic.
+
+**Response `response`:**
+
+```json
+{
+  "matchCount": 3,
+  "returnedCount": 3,
+  "truncated": false,
+  "limit": 50,
+  "objects": [
+    {
+      "uniqueId": 16,
+      "objectId": 1,
+      "x": 150,
+      "y": 105,
+      "groups": [5],
+      "isTrigger": false
+    }
+  ]
+}
+```
+
+Triggers may include `targetGroupId`. `groups` is omitted when empty.
+
+**Errors:** `MISSING_FILTER`, `INVALID_RECT`, `INVALID_LIMIT`
+
+---
+
 ## DESELECT_ALL
 
 Clear selection.
@@ -262,6 +346,8 @@ Flexible nudge with direction and step size.
 
 ```
 PING → confirm inEditor
+GET_LEVEL_SUMMARY → understand level state
+QUERY_OBJECTS → find objects by type/group/area
 CREATE_OBJECT → capture uniqueId from response
 SELECT_OBJECTS → re-select later
 GET_SELECTION → verify state

@@ -4,6 +4,8 @@
 
 #include <Geode/Geode.hpp>
 
+#include <functional>
+
 using namespace geode::prelude;
 
 namespace editorcursor {
@@ -25,19 +27,88 @@ inline int countSelected(EditorUI* ui) {
     return count;
 }
 
+inline matjson::Value objectSnapshot(GameObject* obj) {
+    if (!obj) return matjson::Value();
+
+    auto pos = obj->getPosition();
+    return matjson::makeObject({
+        {"uniqueId", obj->m_uniqueID},
+        {"objectId", obj->m_objectID},
+        {"x", pos.x},
+        {"y", pos.y},
+    });
+}
+
+inline matjson::Value collectObjectGroups(GameObject* obj) {
+    matjson::Value groups = matjson::Value::array();
+    if (!obj) return groups;
+
+    int const count = obj->m_groupCount > 0 ? obj->m_groupCount : 10;
+    for (int i = 0; i < count && i < 10; i++) {
+        int const groupId = obj->getGroupID(i);
+        if (groupId > 0) {
+            groups.push(groupId);
+        }
+    }
+
+    return groups;
+}
+
+inline bool objectHasGroup(GameObject* obj, int groupId) {
+    if (!obj || groupId <= 0) return false;
+
+    int const count = obj->m_groupCount > 0 ? obj->m_groupCount : 10;
+    for (int i = 0; i < count && i < 10; i++) {
+        if (obj->getGroupID(i) == groupId) {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+inline matjson::Value objectQuerySnapshot(GameObject* obj) {
+    auto snapshot = objectSnapshot(obj);
+
+    auto groups = collectObjectGroups(obj);
+    if (groups.size() > 0) {
+        snapshot["groups"] = std::move(groups);
+    }
+
+    if (obj->m_isTrigger) {
+        snapshot["isTrigger"] = true;
+    }
+
+    if (auto* effect = typeinfo_cast<EffectGameObject*>(obj)) {
+        if (effect->m_targetGroupID > 0) {
+            snapshot["targetGroupId"] = effect->m_targetGroupID;
+        }
+    }
+
+    return snapshot;
+}
+
+inline void forEachLevelObject(
+    LevelEditorLayer* editor,
+    std::function<void(GameObject*)> const& visit
+) {
+    if (!editor) return;
+
+    auto* objects = editor->getAllObjects();
+    if (!objects) return;
+
+    for (auto* obj : CCArrayExt<GameObject>(objects)) {
+        visit(obj);
+    }
+}
+
 inline matjson::Value collectSelectedPositions(EditorUI* ui) {
     matjson::Value positions = matjson::Value::array();
     if (!ui) return positions;
 
     auto appendPosition = [&](GameObject* obj) {
         if (!obj) return;
-        auto pos = obj->getPosition();
-        positions.push(matjson::makeObject({
-            {"uniqueId", obj->m_uniqueID},
-            {"objectId", obj->m_objectID},
-            {"x", pos.x},
-            {"y", pos.y},
-        }));
+        positions.push(objectSnapshot(obj));
     };
 
     if (ui->m_selectedObject) {
