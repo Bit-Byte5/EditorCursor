@@ -1,0 +1,27 @@
+{
+	"geode": "5.7.1",
+	"gd": {
+		"win": "2.2081",
+		"android": "2.2081",
+		"mac": "2.2081",
+		"ios": "2.2081"
+	},
+	"id": "paxcirlot.editorcursor",
+	"name": "EditorCursor",
+	"version": "1.0.0",
+	"developer": "PaxCirlot",
+	"description": "WebSocket bridge for controlling the Geometry Dash level editor from Cursor IDE. Localhost only.",
+	"dependencies": {
+		"geode.node-ids": ">=v1.23.3"
+	},
+	"settings": {
+		"ws-port": {
+			"type": "int",
+			"name": "WebSocket Port",
+			"description": "Port for the localhost WebSocket server (127.0.0.1 only)",
+			"default": 1314,
+			"min": 1024,
+			"max": 65535
+		}
+	}
+}
