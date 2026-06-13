@@ -20,19 +20,19 @@ inline std::optional<EditCommand> editCommandForDirection(
         {"up", EditCommand::Up},
         {"down", EditCommand::Down},
     };
-    static std::unordered_map<std::string, EditCommand> const small = {
+    static std::unordered_map<std::string, EditCommand> const smallStep = {
         {"left", EditCommand::SmallLeft},
         {"right", EditCommand::SmallRight},
         {"up", EditCommand::SmallUp},
         {"down", EditCommand::SmallDown},
     };
-    static std::unordered_map<std::string, EditCommand> const big = {
+    static std::unordered_map<std::string, EditCommand> const bigStep = {
         {"left", EditCommand::BigLeft},
         {"right", EditCommand::BigRight},
         {"up", EditCommand::BigUp},
         {"down", EditCommand::BigDown},
     };
-    static std::unordered_map<std::string, EditCommand> const tiny = {
+    static std::unordered_map<std::string, EditCommand> const tinyStep = {
         {"left", EditCommand::TinyLeft},
         {"right", EditCommand::TinyRight},
         {"up", EditCommand::TinyUp},
@@ -40,9 +40,9 @@ inline std::optional<EditCommand> editCommandForDirection(
     };
 
     std::unordered_map<std::string, EditCommand> const* table = &normal;
-    if (step == "small") table = &small;
-    else if (step == "big") table = &big;
-    else if (step == "tiny") table = &tiny;
+    if (step == "small") table = &smallStep;
+    else if (step == "big") table = &bigStep;
+    else if (step == "tiny") table = &tinyStep;
     else if (step != "normal" && !step.empty()) return std::nullopt;
 
     auto it = table->find(direction);
