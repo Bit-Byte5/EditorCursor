@@ -20,5 +20,6 @@ npx -y wscat -c ws://127.0.0.1:1314 -w 5 -x '{"nonce":"1","action":"PING"}'
 
 | Doc | Contents |
 |-----|----------|
+| [docs/DEV-SHARING.md](docs/DEV-SHARING.md) | Build, install, and share dev `.geode` builds |
 | [docs/HANDOFF.md](docs/HANDOFF.md) | Architecture, build, gotchas, GD domain model, roadmap — **start here for agent continuation** |
 | [docs/API.md](docs/API.md) | Full WebSocket protocol reference |
